@@ -10,20 +10,35 @@ client_id=os.getenv("CLIENT_ID")
 
 app = Flask(__name__)
 
-def get_tracks(fuzzy_tags="rock", limit=5):
+def get_tracks(query=None, fuzzy_tags="rock", limit=20):
   params={'client_id':client_id,
           'format':'json',
           'limit':limit,
-          'fuzzytags':fuzzy_tags,
           'include':'musicinfo'
           }
+  if query:
+    params['namesearch'] = query
+  else:
+    params['fuzzytags'] = fuzzy_tags
+
   response=requests.get(BASE_URL, params=params)
   data=response.json()
   return jsonify(data.get('results', []))
-  
+
 @app.route("/")
 def index():
   return get_tracks()
 
-if __name__ in "__main__":
+@app.route("/api/tracks")
+def tracks():
+  return get_tracks()
+
+@app.route("/api/search")
+def search():
+  query = request.args.get("q", "").strip()
+  if not query:
+    return jsonify([])
+  return get_tracks(query=query)
+
+if __name__ == "__main__":
   app.run(debug=True)
