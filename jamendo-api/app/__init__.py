@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify
 
 from app.config import Config
-from app.extensions import db
+from app.extensions import db, login_manager, oauth
 
 
 def create_app(config_class=Config):
@@ -9,14 +9,38 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     db.init_app(app)
+    login_manager.init_app(app)
+    oauth.init_app(app)
+
+    oauth.register(
+        name="google",
+        client_id=app.config["GOOGLE_CLIENT_ID"],
+        client_secret=app.config["GOOGLE_CLIENT_SECRET"],
+        server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+        client_kwargs={"scope": "openid email profile"},
+    )
 
     # Import models so their tables are registered with SQLAlchemy's
-    # metadata before `flask init-db` (db.create_all()) runs.
+    # metadata before `flask init-db` (db.create_all()) runs, and so
+    # the user_loader below can query User.
     from app import models  # noqa: F401
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        return db.session.get(models.User, int(user_id))
+
+    # This is a JSON API, not a server-rendered site — an unauthenticated
+    # request to a @login_required route should get a 401, not Flask-
+    # Login's default redirect to a (nonexistent) login page.
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return jsonify({"error": "authentication required"}), 401
+
+    from app.routes.auth import auth_bp
     from app.routes.tracks import tracks_bp
 
     app.register_blueprint(tracks_bp)
+    app.register_blueprint(auth_bp)
 
     register_cli(app)
 
