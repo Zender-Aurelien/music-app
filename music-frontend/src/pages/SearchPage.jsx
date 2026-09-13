@@ -8,7 +8,6 @@ export function SearchPage() {
     useEffect(() => {
         const url = query.trim() ? `/api/search?q=${encodeURIComponent(query)}` : '/api/tracks'
 
-        setStatus('loading')
         const controller = new AbortController()
 
         fetch(url, { signal: controller.signal })
@@ -31,7 +30,10 @@ export function SearchPage() {
                 type="text"
                 placeholder="Search tracks..."
                 value={query}
-                onChange={e => setQuery(e.target.value)}
+                onChange={e => {
+                    setQuery(e.target.value)
+                    setStatus('loading')
+                }}
             />
 
             {status === 'loading' && <p className="status">Loading...</p>}
