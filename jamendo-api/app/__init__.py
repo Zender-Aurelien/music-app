@@ -37,14 +37,28 @@ def create_app(config_class=Config):
         return jsonify({"error": "authentication required"}), 401
 
     from app.routes.auth import auth_bp
+    from app.routes.playlists import playlists_bp
     from app.routes.tracks import tracks_bp
 
     app.register_blueprint(tracks_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(playlists_bp)
 
+    register_error_handlers(app)
     register_cli(app)
 
     return app
+
+
+def register_error_handlers(app):
+    # This is a JSON API — return {"error": ...} instead of Flask's default
+    # HTML error pages for the abort() calls used throughout the routes.
+    for status in (400, 403, 404):
+        app.register_error_handler(status, _json_error)
+
+
+def _json_error(error):
+    return jsonify({"error": error.description}), error.code
 
 
 def register_cli(app):
