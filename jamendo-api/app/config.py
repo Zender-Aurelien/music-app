@@ -10,3 +10,6 @@ class Config:
 
     JAMENDO_CLIENT_ID = os.getenv("CLIENT_ID")
     JAMENDO_BASE_URL = "https://api.jamendo.com/v3.0/tracks/"
+
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///app.db")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
