@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { AddToPlaylistMenu } from '../components/AddToPlaylistMenu'
+import '../styles/shared.css'
 import './SearchPage.css'
 export function SearchPage() {
     const [query, setQuery] = useState('')
@@ -52,6 +54,7 @@ export function SearchPage() {
                         <span className="track-duration">
                             {Math.floor(track.duration / 60)}:{String(track.duration % 60).padStart(2, '0')}
                         </span>
+                        <AddToPlaylistMenu track={track} />
                     </li>
                 ))}
             </ul>

@@ -1,0 +1,60 @@
+.playlist-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+  font-family: system-ui, sans-serif;
+}
+
+.playlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.playlist-title {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.playlist-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.playlist-rename-form {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.playlist-rename-form .search-input {
+  margin-bottom: 0;
+}
+
+.playlist-page .track-card {
+  position: relative;
+  padding-right: 2.25rem;
+}
+
+.playlist-remove-track {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1rem;
+}
+
+.playlist-remove-track:hover {
+  color: #c0392b;
+  border-color: #c0392b;
+}
