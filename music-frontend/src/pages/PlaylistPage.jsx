@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '../context/auth-context'
 import {
     deletePlaylist,
     getPlaylist,
@@ -13,6 +14,7 @@ import './PlaylistPage.css'
 export function PlaylistPage() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { status: authStatus } = useAuth()
 
     const [playlist, setPlaylist] = useState(null)
     const [status, setStatus] = useState('loading') // loading | done | error
@@ -25,6 +27,8 @@ export function PlaylistPage() {
     const [nameDraft, setNameDraft] = useState('')
 
     useEffect(() => {
+        if (authStatus !== 'authenticated') return
+
         let cancelled = false
         getPlaylist(id)
             .then(data => {
@@ -39,7 +43,7 @@ export function PlaylistPage() {
                 setStatus('error')
             })
         return () => { cancelled = true }
-    }, [id])
+    }, [id, authStatus])
 
     function handleShuffle() {
         setPlaybackOrder(shuffle(playlist.tracks))
@@ -81,6 +85,8 @@ export function PlaylistPage() {
         navigate('/playlists')
     }
 
+    if (authStatus === 'loading') return <p className="status">Loading...</p>
+    if (authStatus === 'anonymous') return <p className="status">Sign in with Google to see this playlist.</p>
     if (status === 'loading') return <p className="status">Loading...</p>
     if (status === 'error') return <p className="status error">Something went wrong.</p>
     if (!playlist) return null
