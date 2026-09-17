@@ -47,6 +47,13 @@ music-frontend/     React + Vite frontend
    ```bash
    flask --app wsgi init-db
    ```
+   `instance/app.db` is gitignored (SQLite files aren't committed), so this
+   step doesn't happen automatically when you clone or pull. Re-run it
+   any time `instance/` is missing or empty — e.g. after a fresh clone,
+   or if you ever delete the `instance/` folder. Symptom if you forget:
+   requests that touch the database (like signing in) fail with a 500
+   and `sqlalchemy.exc.OperationalError: no such table: users` in the
+   Flask log.
 4. Run the API:
    ```bash
    flask --app wsgi run --debug
