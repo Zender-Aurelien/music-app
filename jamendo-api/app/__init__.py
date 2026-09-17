@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 
 from app.config import Config
-from app.extensions import db, login_manager, oauth
+from app.extensions import db, limiter, login_manager, oauth
 
 
 def create_app(config_class=Config):
@@ -11,6 +11,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     login_manager.init_app(app)
     oauth.init_app(app)
+    limiter.init_app(app)
 
     oauth.register(
         name="google",
@@ -52,8 +53,10 @@ def create_app(config_class=Config):
 
 def register_error_handlers(app):
     # This is a JSON API — return {"error": ...} instead of Flask's default
-    # HTML error pages for the abort() calls used throughout the routes.
-    for status in (400, 403, 404):
+    # HTML error pages for the abort() calls used throughout the routes
+    # (400/403/404) and for Flask-Limiter's 429 when a client goes over
+    # the rate limit.
+    for status in (400, 403, 404, 429):
         app.register_error_handler(status, _json_error)
 
 

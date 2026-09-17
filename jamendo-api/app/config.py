@@ -31,3 +31,10 @@ class Config:
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = False
     SESSION_COOKIE_HTTPONLY = True
+
+    # Per-client-IP rate limit applied to every route. In-memory storage is
+    # fine for this single-process dev setup; a multi-process/production
+    # deployment would need a shared backend (e.g. Redis) instead so all
+    # workers see the same counts.
+    RATELIMIT_DEFAULT = "20 per second"
+    RATELIMIT_STORAGE_URI = "memory://"
